@@ -1,16 +1,62 @@
-# Node
+# === Java / Maven ===
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven wrapper
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+
+# Maven backup files
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+
+# === Spring Boot generated ===
+HELP.md
+
+# === IntelliJ IDEA ===
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# === Eclipse / STS ===
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# === NetBeans ===
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# === VS Code ===
+.vscode/
+
+# === OS junk ===
+.DS_Store
+Thumbs.db
+
+# === Environment / secrets ===
+.env
+
+# === Logs ===
+*.log
+
+# === Node.js ===
 node_modules/
 dist/
 
-# Java
-/target
-*.class
-
-# General
-.env
-.DS_Store
-.idea/
-.vscode/
-
-# OS
-Thumbs.db
+# === General ===
+*.tmp
+*.swp
