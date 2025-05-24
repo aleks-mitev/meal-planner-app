@@ -19,13 +19,12 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
-    public User createUser(@RequestBody @Valid CreateUserDTO dto) {
-        User newUser = userMapper.toEntity(dto);
-        return userService.create(newUser);
+    public UserResponseDTO createUser(@RequestBody @Valid CreateUserDTO dto) {
+        return userService.create(dto);
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         return userService.getAll();
     }
 
@@ -35,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserResponseDTO update(@PathVariable String id, @RequestBody @Valid UpdateUserDTO dto) {
+    public UserResponseDTO updateUser(@PathVariable String id, @RequestBody @Valid UpdateUserDTO dto) {
         return userService.update(id, dto);
     }
 

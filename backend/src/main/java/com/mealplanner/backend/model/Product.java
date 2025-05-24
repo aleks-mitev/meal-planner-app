@@ -1,6 +1,7 @@
 package com.mealplanner.backend.model;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,8 @@ public class Product {
     @NotBlank
     private String name;
 
-    @PositiveOrZero private Double caloriesPer100g;
+    @Positive(message = "{product.calories.required}")
+    private Double caloriesPer100g;
     @PositiveOrZero private Double proteinPer100g;
     @PositiveOrZero private Double fatPer100g;
     @PositiveOrZero private Double carbsPer100g;
