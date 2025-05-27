@@ -28,7 +28,7 @@ public class User {
     @Size(min = 5, message = "{user.password.short}")
     private String password;
 
-    private LocalDate registrationDate = LocalDate.now();
+    private LocalDate registrationDate;
 }
 
 
