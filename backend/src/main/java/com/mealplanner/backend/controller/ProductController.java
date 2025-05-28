@@ -8,8 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v0/products")
 @RequiredArgsConstructor
@@ -22,18 +20,18 @@ public class ProductController {
         return productService.create(dto);
     }
 
-    @GetMapping("/user/{userId}")
-    public List<ProductResponseDTO> getAllByUser(@PathVariable String userId) {
-        return productService.getAllByUser(userId);
+    @GetMapping("/{productId}")
+    public ProductResponseDTO getById(@PathVariable String productId) {
+        return productService.getDTOById(productId);
     }
 
-    @PutMapping("/{id}")
-    public ProductResponseDTO update(@PathVariable String id, @RequestBody @Valid UpdateProductDTO dto) {
-        return productService.update(id, dto);
+    @PutMapping("/{productId}")
+    public ProductResponseDTO update(@PathVariable String productId, @RequestBody @Valid UpdateProductDTO dto) {
+        return productService.update(productId, dto);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable String id) {
-        productService.delete(id);
+    @DeleteMapping("/{productId}")
+    public void delete(@PathVariable String productId) {
+        productService.delete(productId);
     }
 }

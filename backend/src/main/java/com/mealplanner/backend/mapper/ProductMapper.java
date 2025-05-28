@@ -9,16 +9,13 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 
-    // Create a new Product from DTO
     @Mapping(target = "id", ignore = true)
     Product toEntity(CreateProductDTO dto);
 
-    // Update existing Product from update DTO
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "userId", ignore = true) // don't allow userId change
+    @Mapping(target = "userId", ignore = true)
     void updateEntity(@MappingTarget Product product, UpdateProductDTO dto);
 
-    // Convert Product to response DTO
     ProductResponseDTO toResponseDTO(Product product);
 }

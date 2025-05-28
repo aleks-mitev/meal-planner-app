@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -39,16 +40,20 @@ public class UserService {
                 .orElseThrow(()-> new ResourceNotFoundException("User not found for this id: " + id));
     }
 
-    public UserResponseDTO update(String id, UpdateUserDTO dto) {
-        User user = getById(id);
+    public UserResponseDTO getDTOById(String id) {
+        return userMapper.toResponseDTO(getById(id));
+    }
 
-        if (!user.getEmail().equals(dto.getEmail()) &&
-            userRepository.existsByEmail(dto.getEmail())) {
+    public UserResponseDTO update(String id, UpdateUserDTO updatedUserData) {
+        User existingUser = getById(id);
+
+        if (!existingUser.getEmail().equals(updatedUserData.getEmail()) &&
+            userRepository.existsByEmail(updatedUserData.getEmail())) {
             throw new IllegalArgumentException("User with this email already exists");
         }
 
-        userMapper.updateEntity(user, dto);
-        User saved = userRepository.save(user);
+        userMapper.updateEntity(existingUser, updatedUserData);
+        User saved = userRepository.save(existingUser);
         return userMapper.toResponseDTO(saved);
     }
 

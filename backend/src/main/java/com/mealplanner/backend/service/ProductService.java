@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
     private final ProductMapper productMapper;
+    private final UserRepository userRepository;
 
     public ProductResponseDTO create(CreateProductDTO dto) {
         if (!userRepository.existsById(dto.getUserId())) {
@@ -48,16 +48,20 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
     }
 
-    public ProductResponseDTO update(String id, UpdateProductDTO dto) {
-        Product product = getById(id);
+    public ProductResponseDTO getDTOById(String id) {
+        return productMapper.toResponseDTO(getById(id));
+    }
 
-        if(!product.getName().equals(dto.getName()) &&
-           productRepository.existsByNameAndUserId(dto.getName(), product.getUserId())) {
+    public ProductResponseDTO update(String id, UpdateProductDTO updatedProductData) {
+        Product existingProduct = getById(id);
+
+        if(!existingProduct.getName().equals(updatedProductData.getName()) &&
+           productRepository.existsByNameAndUserId(updatedProductData.getName(), existingProduct.getUserId())) {
             throw new IllegalArgumentException("Product with this name already exists for this user");
         }
 
-        productMapper.updateEntity(product, dto);
-        Product saved = productRepository.save(product);
+        productMapper.updateEntity(existingProduct, updatedProductData);
+        Product saved = productRepository.save(existingProduct);
         return productMapper.toResponseDTO(saved);
     }
 
