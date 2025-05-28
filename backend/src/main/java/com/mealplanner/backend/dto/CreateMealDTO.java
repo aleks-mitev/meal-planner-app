@@ -10,14 +10,13 @@ import java.util.Map;
 @Data
 public class CreateMealDTO {
 
+    private String userId; // from URL
+
     @NotBlank
     private String name;
+    private String description; // optional
 
     @NotEmpty
     private Map<@NotBlank String , @PositiveOrZero Integer> products;
 
-    private String description;
-
-    @NotBlank
-    private String userId;
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Users Table</title>
+</head>
+<body>
+BODY1 - before table
+<div id="users-table-container">
+    Loading users...
+</div>
+
+<script>
+    async function fetchAndDisplayUsers() {
+      try {
+        const response = await fetch('/api/v0/users');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const users = await response.json();
+
+        let tableHTML = `
+          <table border="1" cellpadding="6" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Registration Date</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        users.forEach(user => {
+          tableHTML += `
+            <tr>
+              <td>${user.id}</td>
+              <td>${user.name}</td>
+              <td>${user.email}</td>
+              <td>${user.registrationDate}</td>
+            </tr>
+          `;
+        });
+
+        tableHTML += `
+            </tbody>
+          </table>
+        `;
+
+        document.getElementById('users-table-container').innerHTML = tableHTML;
+
+      } catch (error) {
+        document.getElementById('users-table-container').innerHTML = `<p style="color: red;">Error loading users: ${error.message}</p>`;
+      }
+    }
+
+    // Call the function to fetch and display users on page load
+    fetchAndDisplayUsers();
+</script>
+BODY2 - after table
+</body>
+</html>

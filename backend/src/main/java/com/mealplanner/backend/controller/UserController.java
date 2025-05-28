@@ -1,12 +1,13 @@
 package com.mealplanner.backend.controller;
 
-import com.mealplanner.backend.dto.*;
-import com.mealplanner.backend.service.MealService;
-import com.mealplanner.backend.service.ProductService;
+import com.mealplanner.backend.dto.CreateUserDTO;
+import com.mealplanner.backend.dto.UpdateUserDTO;
+import com.mealplanner.backend.dto.UserResponseDTO;
 import com.mealplanner.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -14,8 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final ProductService productService;
-    private final MealService mealService;
 
     @PostMapping
     public UserResponseDTO createUser(@RequestBody @Valid CreateUserDTO dto) {
@@ -27,31 +26,18 @@ public class UserController {
         return userService.getAll();
     }
 
-    @GetMapping("/{id}")
-    public UserResponseDTO getUserById(@PathVariable String id) {
-        return userService.getDTOById(id);
+    @GetMapping("/{userId}")
+    public UserResponseDTO getUserById(@PathVariable String userId) {
+        return userService.getDTOById(userId);
     }
 
-    @PutMapping("/{id}")
-    public UserResponseDTO updateUser(@PathVariable String id, @RequestBody @Valid UpdateUserDTO dto) {
-        return userService.update(id, dto);
+    @PutMapping("/{userId}")
+    public UserResponseDTO updateUser(@PathVariable String userId, @RequestBody @Valid UpdateUserDTO dto) {
+        return userService.update(userId, dto);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable String id) {
-        userService.delete(id);
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable String userId) {
+        userService.delete(userId);
     }
-
-    @GetMapping("/{id}/products")
-    public List<ProductResponseDTO> getAllProductsForUser(@PathVariable String id) {
-        return productService.getAllByUser(id);
-    }
-
-    @GetMapping("/{id}/meals")
-    public List<MealResponseDTO> getAllMealsForUser(@PathVariable String id) {
-        return mealService.getAllByUser(id);
-    }
-
 }
-
-

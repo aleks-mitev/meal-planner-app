@@ -10,6 +10,7 @@ public class UpdateProductDTO {
 
     @NotBlank
     private String name;
+    private String description;
 
     @Positive(message = "{product.calories.required}")
     private Double caloriesPer100g;
@@ -19,6 +20,5 @@ public class UpdateProductDTO {
     @PositiveOrZero private Double packageWeightGrams;
     @PositiveOrZero private Double packagePrice;
 
-    private String description;
 }
 

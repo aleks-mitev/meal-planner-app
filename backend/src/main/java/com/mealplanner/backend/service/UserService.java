@@ -10,6 +10,7 @@ import com.mealplanner.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,7 @@ public class UserService {
             throw new IllegalArgumentException("User with this email already exists");
         }
         User user = userMapper.toEntity(dto);
+        user.setRegistrationDate(LocalDate.now());
         User saved = userRepository.save(user);
         return userMapper.toResponseDTO(saved);
     }

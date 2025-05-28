@@ -8,4 +8,5 @@ import java.util.List;
 public interface ProductRepository extends MongoRepository<Product, String> {
     List<Product> findAllByUserId(String userId);
     boolean existsByNameAndUserId(String name, String userId);
+    boolean existsByIdAndUserId(String id, String userId);
 }

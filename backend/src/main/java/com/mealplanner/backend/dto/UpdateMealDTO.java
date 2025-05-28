@@ -11,9 +11,9 @@ import java.util.Map;
 public class UpdateMealDTO {
     @NotBlank
     private String name;
+    private String description;
 
     @NotEmpty
     private Map<@NotBlank String , @PositiveOrZero Integer> products;
 
-    private String description;
 }
