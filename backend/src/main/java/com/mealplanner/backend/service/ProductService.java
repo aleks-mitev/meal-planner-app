@@ -7,7 +7,7 @@ import com.mealplanner.backend.exception.ResourceNotFoundException;
 import com.mealplanner.backend.mapper.ProductMapper;
 import com.mealplanner.backend.model.Product;
 import com.mealplanner.backend.repository.ProductRepository;
-import com.mealplanner.backend.repository.UserRepository;
+import com.mealplanner.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,17 +20,25 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final UserRepository userRepository;
+    private final UserService userService;
+
+    public void applyDefaults(CreateProductDTO dto) {
+        if (dto.getCaloriesPer100g() == null) dto.setCaloriesPer100g(0.0);
+        if (dto.getProteinPer100g() == null) dto.setProteinPer100g(0.0);
+        if (dto.getFatPer100g() == null) dto.setFatPer100g(0.0);
+        if (dto.getCarbsPer100g() == null) dto.setCarbsPer100g(0.0);
+        if (dto.getPackageWeightGrams() == null) dto.setPackageWeightGrams(0.0);
+        if (dto.getPackagePrice() == null) dto.setPackagePrice(0.0);
+    }
 
     public ProductResponseDTO create(CreateProductDTO dto) {
-        if (!userRepository.existsById(dto.getUserId())) {
-            throw new ResourceNotFoundException("User not found for userId: " + dto.getUserId());
-        }
+        userService.validateUserExists(dto.getUserId());
         
         if (productRepository.existsByNameAndUserId(dto.getName(), dto.getUserId())) {
             throw new IllegalArgumentException("Product with this name already exists for this user");
         }
 
+        applyDefaults(dto);
         Product product = productMapper.toEntity(dto);
         Product saved = productRepository.save(product);
         return productMapper.toResponseDTO(saved);
@@ -45,7 +53,7 @@ public class ProductService {
 
     public Product getById(String id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found for this id: " + id ));
     }
 
     public ProductResponseDTO getDTOById(String id) {
@@ -67,5 +75,18 @@ public class ProductService {
 
     public void delete(String id) {
         productRepository.deleteById(id);
+    }
+
+    public void validateProductExists(String productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new ResourceNotFoundException("Product not found for this id: " + productId);
+        }
+    }
+
+    public void validateProductBelongsToUser(String productId, String userId) {
+        Product product = getById(productId);
+        if (!product.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("Product with id: " + productId + " doesn't belong to user with id: " + userId);
+        }
     }
 }

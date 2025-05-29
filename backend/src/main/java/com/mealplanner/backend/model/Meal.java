@@ -2,6 +2,7 @@ package com.mealplanner.backend.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,8 +24,13 @@ public class Meal {
     private String name;
 
     @NotEmpty
-    private Map<@NotBlank String , @PositiveOrZero Integer> products;
+    private Map<@NotBlank String , @NotNull @PositiveOrZero Double> products;
 
+    private Double calories;
+    private Double protein;
+    private Double fat;
+    private Double carbs;
+    private Double price;
     private String description;
 
     @NotBlank

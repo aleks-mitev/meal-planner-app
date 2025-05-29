@@ -10,5 +10,10 @@ public class MealResponseDTO {
     private String userId;
     private String name;
     private String description;
-    private Map<String, Integer> products;
+    private Map<String, Double> products;
+    private Double calories;
+    private Double protein;
+    private Double fat;
+    private Double carbs;
+    private Double price;
 }

@@ -6,13 +6,13 @@ import com.mealplanner.backend.dto.UpdateMealDTO;
 import com.mealplanner.backend.exception.ResourceNotFoundException;
 import com.mealplanner.backend.mapper.MealMapper;
 import com.mealplanner.backend.model.Meal;
+import com.mealplanner.backend.model.Product;
 import com.mealplanner.backend.repository.MealRepository;
-import com.mealplanner.backend.repository.ProductRepository;
-import com.mealplanner.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -21,26 +21,23 @@ public class MealService {
 
     private final MealRepository mealRepository;
     private final MealMapper mealMapper;
-    private final UserRepository userRepository;
-    private final ProductRepository productRepository;
+    private final UserService userService;
+    private final ProductService productService;
+
 
     public MealResponseDTO create(CreateMealDTO dto) {
-        if (!userRepository.existsById(dto.getUserId())) {
-            throw new ResourceNotFoundException("User not found for userId: " + dto.getUserId());
-        }
+        userService.validateUserExists(dto.getUserId());
+
         Set<String> productIds = dto.getProducts().keySet();
         for (String productId : productIds) {
-            if (!productRepository.existsByIdAndUserId(productId, dto.getUserId())) {
-                throw new ResourceNotFoundException(
-                        "Product with id: " + productId + " not found or doesn't belong to user: " + dto.getUserId()
-                );
-            }
+            productService.validateProductBelongsToUser(productId, dto.getUserId());
         }
         if (mealRepository.existsByNameAndUserId(dto.getName(), dto.getUserId())) {
             throw new IllegalArgumentException("Meal with this name already exists for this user");
         }
 
         Meal meal = mealMapper.toEntity(dto);
+        recalculateNutritionalValues(meal);
         Meal saved = mealRepository.save(meal);
         return mealMapper.toResponseDTO(saved);
     }
@@ -66,12 +63,7 @@ public class MealService {
 
         Set<String> productIds = updatedMealData.getProducts().keySet();
         for (String productId : productIds) {
-            if (!productRepository.existsByIdAndUserId(productId, existingMeal.getUserId())) {
-                throw new ResourceNotFoundException(
-                        "Product with id: " + productId +
-                        " not found or doesn't belong to user: " + existingMeal.getUserId()
-                );
-            }
+            productService.validateProductBelongsToUser(productId, existingMeal.getUserId());
         }
 
         if(!existingMeal.getName().equals(updatedMealData.getName()) &&
@@ -80,11 +72,42 @@ public class MealService {
         }
 
         mealMapper.updateEntity(existingMeal, updatedMealData);
+        recalculateNutritionalValues(existingMeal);
         Meal saved = mealRepository.save(existingMeal);
         return mealMapper.toResponseDTO(saved);
     }
 
     public void delete(String id) {
         mealRepository.deleteById(id);
+    }
+
+    private void recalculateNutritionalValues(Meal meal) {
+        double totalCalories = 0.0;
+        double totalProtein = 0.0;
+        double totalFat = 0.0;
+        double totalCarbs = 0.0;
+        double totalPrice = 0.0;
+
+        for (Map.Entry<String, Double> entry : meal.getProducts().entrySet() ) {
+            String productId = entry.getKey();
+            Double quantityInGrams = entry.getValue();
+
+            Product product = productService.getById(productId);
+            double scale = quantityInGrams / 100.0;
+
+            totalCalories += product.getCaloriesPer100g() * scale;
+            totalProtein += product.getProteinPer100g() * scale;
+            totalFat += product.getFatPer100g() * scale;
+            totalCarbs += product.getCarbsPer100g() * scale;
+            if (product.getPackageWeightGrams() != 0.0) {
+                totalPrice += (product.getPackagePrice() / product.getPackageWeightGrams()) * quantityInGrams;
+            }
+        }
+
+        meal.setCalories(totalCalories);
+        meal.setProtein(totalProtein);
+        meal.setFat(totalFat);
+        meal.setCarbs(totalCarbs);
+        meal.setPrice(totalPrice);
     }
 }

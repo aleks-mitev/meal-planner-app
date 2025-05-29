@@ -62,5 +62,11 @@ public class UserService {
     public void delete(String id) {
         userRepository.deleteById(id);
     }
+
+    public void validateUserExists(String userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("User not found for userId: " + userId);
+        }
+    }
 }
 
