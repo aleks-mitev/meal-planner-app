@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "daily_logs")
+@CompoundIndex(name = "unique_user_date", def = "{'userId': 1, 'date': 1}", unique = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,12 +32,11 @@ public class DailyLog {
     private LocalDate date;
 
     @NotNull
-    private List<@NotBlank String> selectedMealIds = new ArrayList<>();
+    private List<@NotBlank String> selectedMealIds;
 
-    private Double totalCalories = 0.0;
-    private Double totalProtein = 0.0;
-    private Double totalFat = 0.0;
-    private Double totalCarbs = 0.0;
-    private Double totalPrice = 0.0;
-
+    private Double totalCalories;
+    private Double totalProtein;
+    private Double totalFat;
+    private Double totalCarbs;
+    private Double totalPrice;
 }

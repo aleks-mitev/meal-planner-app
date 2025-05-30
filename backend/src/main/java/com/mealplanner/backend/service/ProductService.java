@@ -7,7 +7,6 @@ import com.mealplanner.backend.exception.ResourceNotFoundException;
 import com.mealplanner.backend.mapper.ProductMapper;
 import com.mealplanner.backend.model.Product;
 import com.mealplanner.backend.repository.ProductRepository;
-import com.mealplanner.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -77,13 +76,7 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public void validateProductExists(String productId) {
-        if (!productRepository.existsById(productId)) {
-            throw new ResourceNotFoundException("Product not found for this id: " + productId);
-        }
-    }
-
-    public void validateProductBelongsToUser(String productId, String userId) {
+    public void ensureProductBelongsToUser(String productId, String userId) {
         Product product = getById(productId);
         if (!product.getUserId().equals(userId)) {
             throw new IllegalArgumentException("Product with id: " + productId + " doesn't belong to user with id: " + userId);

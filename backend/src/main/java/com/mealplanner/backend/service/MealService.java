@@ -30,7 +30,7 @@ public class MealService {
 
         Set<String> productIds = dto.getProducts().keySet();
         for (String productId : productIds) {
-            productService.validateProductBelongsToUser(productId, dto.getUserId());
+            productService.ensureProductBelongsToUser(productId, dto.getUserId());
         }
         if (mealRepository.existsByNameAndUserId(dto.getName(), dto.getUserId())) {
             throw new IllegalArgumentException("Meal with this name already exists for this user");
@@ -44,7 +44,7 @@ public class MealService {
 
     public Meal getById(String id) {
         return mealRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Meal not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Meal with id: " + id + " doesn't exist"));
     }
 
     public MealResponseDTO getDTOById(String id) {
@@ -63,7 +63,7 @@ public class MealService {
 
         Set<String> productIds = updatedMealData.getProducts().keySet();
         for (String productId : productIds) {
-            productService.validateProductBelongsToUser(productId, existingMeal.getUserId());
+            productService.ensureProductBelongsToUser(productId, existingMeal.getUserId());
         }
 
         if(!existingMeal.getName().equals(updatedMealData.getName()) &&
@@ -79,6 +79,13 @@ public class MealService {
 
     public void delete(String id) {
         mealRepository.deleteById(id);
+    }
+
+    public void ensureMealBelongsToUser(String mealId, String userId) {
+        Meal meal = getById(mealId);
+        if (!meal.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("Meal with id: " + mealId + " doesn't belong to user with id: " + userId);
+        }
     }
 
     private void recalculateNutritionalValues(Meal meal) {
