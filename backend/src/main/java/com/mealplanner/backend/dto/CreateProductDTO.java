@@ -8,8 +8,11 @@ import lombok.Data;
 @Data
 public class CreateProductDTO {
 
+    private String userId; // from URL
+
     @NotBlank
     private String name;
+    private String description; // optional
 
     @Positive(message = "{product.calories.required}")
     private Double caloriesPer100g;
@@ -18,10 +21,5 @@ public class CreateProductDTO {
     @PositiveOrZero private Double carbsPer100g;
     @PositiveOrZero private Double packageWeightGrams;
     @PositiveOrZero private Double packagePrice;
-
-    private String description;
-
-    @NotBlank
-    private String userId;
 }
 
